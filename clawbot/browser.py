@@ -105,10 +105,33 @@ class BrowserController:
             url = "https://duckduckgo.com/?q=" + _urlencode(query)
         elif engine == "bing":
             url = "https://www.bing.com/search?q=" + _urlencode(query)
+        elif engine == "startpage":
+            url = "https://www.startpage.com/sp/search?query=" + _urlencode(query)
+        elif engine == "brave":
+            url = "https://search.brave.com/search?q=" + _urlencode(query)
         else:
-            raise ValueError("engine must be one of: google, duckduckgo, bing")
+            raise ValueError("engine must be one of: google, duckduckgo, bing, startpage, brave")
         await self.goto(url)
         return f"Searched {engine} for: {query}"
+
+    async def has_captcha(self) -> bool:
+        """Check if the current page shows a CAPTCHA."""
+        page = self._require_page()
+        await page.wait_for_load_state("domcontentloaded")
+        # Check for common CAPTCHA indicators
+        captcha_indicators = [
+            "captcha",
+            "verify you're human",
+            "verify you are human",
+            "prove you're not a robot",
+            "prove you are not a robot",
+            "challenge",
+        ]
+        text = (await self.page_text(max_chars=5000)).lower()
+        title = (await page.title()).lower()
+        url = page.url.lower()
+        combined = f"{title} {text} {url}"
+        return any(indicator in combined for indicator in captcha_indicators)
 
     async def page_text(self, max_chars: int = 12_000) -> str:
         page = self._require_page()

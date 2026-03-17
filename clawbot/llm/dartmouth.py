@@ -11,14 +11,17 @@ class DartmouthLLMConfig:
 
     NOTE: Exact env var / model names may differ depending on `langchain_dartmouth`.
     We keep this small and fail with a helpful message if misconfigured.
+
+    Default model: `openai.gpt-oss-120b` (ChatDartmouth default when model_name is None).
+    See https://dartmouth.github.io/langchain-dartmouth-cookbook/03-llms.html for available models.
     """
 
     # `langchain_dartmouth` uses `dartmouth_chat_api_key` parameter name.
     # We'll accept multiple env var names for convenience.
     api_key_env: str = "DARTMOUTH_CHAT_API_KEY"
     fallback_api_key_envs: tuple[str, ...] = ("DARTMOUTH_API_KEY",)
-    model_name: str | None = None
-    max_tokens: int = 1024
+    model_name: str | None = None  # Default: openai.gpt-oss-120b (ChatDartmouth default)
+    max_tokens: int = 2000
     temperature: float = 0.3
 
 
